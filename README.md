@@ -1,5 +1,5 @@
 ## Sanctified Journeys API
-Sanctified Journeys is a comprehensive web application designed to cater to the needs of Celestial Church members embarking on their annual pilgrimage to Benin Republic and Nigeria. It serves as a dedicated platform to facilitate a seamless and spiritually fulfilling pilgrimage experience.
+Sanctified Journeys is a comprehensive web application API designed to cater to the needs of Celestial Church members embarking on their annual pilgrimage to Benin Republic and Nigeria. It serves as a dedicated platform to facilitate a seamless and spiritually fulfilling pilgrimage experience.
 
 With Sanctified Journeys, users can create an account and access a range of features and functionalities tailored to their pilgrimage requirements. The application offers a user-friendly interface, ensuring a smooth and intuitive experience for pilgrims throughout their journey. 
 
