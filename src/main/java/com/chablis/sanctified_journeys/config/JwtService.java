@@ -5,21 +5,34 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtService {
-    private static final String SECRET_KEY = "kzxWtDAEWcLgADAEWcLgASNCcLgASSNCxDAEWcLgASNCWcLgASNCIFReSAB";
+    private static final String SECRET_KEY = "cojkgdjkjhtryTRFGHFGH456tygh324ertfgh78uyjhgGYHJJK456tyghbjkTRGljnfs68sdfjhuidfTJHD87sdsghGHdd6dsghDGHdsjhKDdyusdjd7s7JDGs8ASDgdsy3ed4wHdjs93e";
+    private static final String ROLES_KEY = "roles";
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
+    }
+
+    public List<String> extractRoles(String token) {
+        Claims claims = extractAllClaims(token);
+        List<?> roles = claims.get(ROLES_KEY, List.class);
+
+        return roles.stream()
+                .map(Object::toString)
+                .collect(Collectors.toList());
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -33,6 +46,12 @@ public class JwtService {
     public String generateToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails) {
+        List<String> roles = userDetails.getAuthorities()
+                .stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+        extraClaims.put(ROLES_KEY, roles);
+
         return Jwts
                 .builder()
                 .setClaims(extraClaims)

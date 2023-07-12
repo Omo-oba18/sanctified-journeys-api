@@ -4,6 +4,7 @@ import com.chablis.sanctified_journeys.model.Apartment;
 import com.chablis.sanctified_journeys.repository.ApartmentRepository;
 import com.chablis.sanctified_journeys.request.ApartmentRequest;
 import com.chablis.sanctified_journeys.service.ApartmentService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,12 +16,9 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/apartments")
+@RequiredArgsConstructor
 public class ApartmentController {
     private final ApartmentService apartmentService;
-
-    public ApartmentController(ApartmentService apartmentService) {
-        this.apartmentService = apartmentService;
-    }
 
 //    search endpoint to get apartment according to parameter
     @GetMapping("/search")
@@ -31,13 +29,6 @@ public class ApartmentController {
 
         List<Apartment> apartments = apartmentService.searchApartments(address, price, nearestChurch);
         return ResponseEntity.ok(apartments);
-    }
-
-    //    post endpoints to create an apartment
-    @PostMapping
-    public ResponseEntity<Apartment> createApartment(@RequestBody ApartmentRequest request) {
-        Apartment apartment = apartmentService.createApartment(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(apartment);
     }
 
 }

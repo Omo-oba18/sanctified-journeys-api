@@ -8,25 +8,43 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Configuration
 @RequiredArgsConstructor
-public class ApplicationConfig  {
+public class ApplicationConfig {
 
     private final UserRepository userRepository;
+
     @Bean
-    public UserDetailsService userDetailsService(){
-        System.out.println("checked");
+    public UserDetailsService userDetailsService() {
         return username -> userRepository.findByEmail(username)
+                .map(user -> {
+                    Set<GrantedAuthority> authorities = user.getRoles().stream()
+                            .map(role -> new SimpleGrantedAuthority(role.name()))
+                            .collect(Collectors.toSet());
+
+                    System.out.println(authorities);
+                    return new org.springframework.security.core.userdetails.User(
+                            user.getEmail(),
+                            user.getPassword(),
+                            user.getAuthorities()
+                    );
+                })
                 .orElseThrow(() -> new UsernameNotFoundException("User Not found"));
     }
 
+
     @Bean
-    public AuthenticationProvider authenticationProvider(){
+    public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
         daoAuthenticationProvider.setUserDetailsService(userDetailsService());
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
