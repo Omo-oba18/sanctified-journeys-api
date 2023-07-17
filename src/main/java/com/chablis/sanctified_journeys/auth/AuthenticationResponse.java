@@ -1,17 +1,22 @@
 package com.chablis.sanctified_journeys.auth;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class AuthenticationResponse {
-    @JsonProperty("token")
+
+    private List<String> errors;
     private String token;
 
+    public AuthenticationResponse(List<String> errors) {
+        this.errors = errors;
+    }
 }
