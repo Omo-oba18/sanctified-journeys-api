@@ -1,12 +1,16 @@
 package com.chablis.sanctified_journeys.service;
 
+import com.chablis.sanctified_journeys.model.Address;
 import com.chablis.sanctified_journeys.model.Apartment;
+import com.chablis.sanctified_journeys.model.Church;
 import com.chablis.sanctified_journeys.repository.ApartmentRepository;
-import com.chablis.sanctified_journeys.request.ApartmentRequest;
+import com.chablis.sanctified_journeys.utils.ErrorUtils;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -14,34 +18,34 @@ import java.util.List;
 public class ApartmentService {
     private final ApartmentRepository apartmentRepository;
 
-//    Search apartment service through price, location and church
-    public List<Apartment> searchApartments(String address, float price, String nearestChurch) {
-        if (address != null && !address.isEmpty() && price > 0 && nearestChurch != null && !nearestChurch.isEmpty()) {
-            return apartmentRepository.findByAddressContainingAndPriceLessThanEqualAndChurchesNameContaining(address, price, nearestChurch);
-        } else if (address != null && !address.isEmpty() && price > 0) {
-            return apartmentRepository.findByAddressContainingAndPriceLessThanEqual(address, price);
-        } else if (address != null && !address.isEmpty() && nearestChurch != null && !nearestChurch.isEmpty()) {
-            return apartmentRepository.findByAddressContainingAndChurchesNameContaining(address, nearestChurch);
-        } else if (price > 0 && nearestChurch != null && !nearestChurch.isEmpty()) {
-            return apartmentRepository.findByPriceLessThanEqualAndChurchesNameContaining(price, nearestChurch);
-        } else if (address != null && !address.isEmpty()) {
-            return apartmentRepository.findByAddressContaining(address);
-        } else if (price > 0) {
-            return apartmentRepository.findByPriceLessThanEqual(price);
-        } else if (nearestChurch != null && !nearestChurch.isEmpty()) {
-            return apartmentRepository.findByChurchesNameContaining(nearestChurch);
-        }
+    //    Search apartment service through price, location and church
+    public List<Apartment> searchApartmentsByLocation(String state, String city) {
+        return apartmentRepository.findApartmentsByLocation(state, city);
+    }
 
-        return Collections.emptyList();
+    public List<Apartment> searchApartmentsByLocationAndPriceAndCapacity(String state, String city, double minPrice, double maxPrice, int minCapacity) {
+        return apartmentRepository.findApartmentsByLocationAndPriceAndCapacity(state, city, minPrice, maxPrice, minCapacity);
+    }
+
+    public List<Apartment> searchApartmentsByLocationAndAmenity(String state, String city, String amenity) {
+        return apartmentRepository.findApartmentsByLocationAndAmenity(state, city, amenity);
+    }
+
+    public List<Apartment> findApartmentsNearChurch(String churchState, String churchCity) {
+        return apartmentRepository.findApartmentsNearChurch(churchState, churchCity);
     }
 
     //    create apartment service
-    public Apartment createApartment(ApartmentRequest request) {
-        Apartment apartment = new Apartment();
-        apartment.setAvailability(request.isAvailability());
-        apartment.setPrice(request.getPrice());
-        apartment.setAddress(request.getAddress());
-        // Perform any additional processing or validation if needed
-        return apartmentRepository.save(apartment);
+    public Apartment createApartment(String name, String description, double price, int capacity, List<String> amenities, Address address, Church church) {
+        try {
+            Validation.buildDefaultValidatorFactory().getValidator().validate(church);
+            return apartmentRepository.createApartment(name, description, price, capacity, amenities, address, church);
+        } catch (ConstraintViolationException ex) {
+            ErrorUtils.handleConstraintViolationException(ex);
+            return null; // We should return something here, even though it won't be reached due to the throw statement above.
+        } catch (DataIntegrityViolationException ex) {
+            throw new RuntimeException("Error: Unable to save Apartment. Please check the provided data.");
+        }
     }
+
 }

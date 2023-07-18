@@ -2,26 +2,20 @@ package com.chablis.sanctified_journeys.config;
 
 
 import com.chablis.sanctified_journeys.user.Role;
+import com.chablis.sanctified_journeys.user.User;
 import com.chablis.sanctified_journeys.user.UserRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.security.Key;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 @Service
@@ -34,12 +28,11 @@ public class JWTService {
         return extractClaim(token, Claims::getSubject);
     }
     // Method to check if the user is an admin based on the JWT token
-    public boolean isAdminUser(String token) {
+    public Set<Role> getRolesFromToken(String token) {
         String username = extractUsername(token);
-        String userRole = userRepository.findRoleByEmail(username);
-
-        // Check if the user role is "ADMIN"
-        return "ADMIN".equals(userRole);
+        User user = userRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        return user.getRoles();
     }
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
@@ -89,18 +82,6 @@ public class JWTService {
     private Key getSigningKey() {
         byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
-    }
-    // Method to get the JWT token from the current request
-    public String getCurrentJwtToken() {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        String authorizationHeader = request.getHeader("Authorization");
-
-        // Check if the Authorization header contains the Bearer token prefix
-        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            return authorizationHeader.substring(7); // Extract the token after "Bearer "
-        }
-
-        return null; // Token not found in the request header
     }
 
 }

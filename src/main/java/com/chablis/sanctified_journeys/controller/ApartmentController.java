@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,15 +21,42 @@ import java.util.List;
 public class ApartmentController {
     private final ApartmentService apartmentService;
 
-//    search endpoint to get apartment according to parameter
+    //    search endpoint to get apartment according to parameter
     @GetMapping("/search")
-    public ResponseEntity<List<Apartment>> searchApartments(
-            @RequestParam(required = false) String address,
-            @RequestParam(required = false, defaultValue = "0") float price,
-            @RequestParam(required = false) String nearestChurch) {
+    @PreAuthorize("isAuthenticated()")
+    public List<Apartment> searchApartmentsByLocation(@RequestParam String state, @RequestParam String city) {
+        return apartmentService.searchApartmentsByLocation(state, city);
+    }
 
-        List<Apartment> apartments = apartmentService.searchApartments(address, price, nearestChurch);
-        return ResponseEntity.ok(apartments);
+    @GetMapping("/search/filtered")
+    @PreAuthorize("isAuthenticated()")
+    public List<Apartment> searchApartmentsByLocationAndPriceAndCapacity(
+            @RequestParam String state,
+            @RequestParam String city,
+            @RequestParam double minPrice,
+            @RequestParam double maxPrice,
+            @RequestParam int minCapacity
+    ) {
+        return apartmentService.searchApartmentsByLocationAndPriceAndCapacity(state, city, minPrice, maxPrice, minCapacity);
+    }
+
+    @GetMapping("/search/amenity")
+    @PreAuthorize("isAuthenticated()")
+    public List<Apartment> searchApartmentsByLocationAndAmenity(
+            @RequestParam String state,
+            @RequestParam String city,
+            @RequestParam String amenity
+    ) {
+        return apartmentService.searchApartmentsByLocationAndAmenity(state, city, amenity);
+    }
+
+    @GetMapping("/search/near-church")
+    @PreAuthorize("isAuthenticated()")
+    public List<Apartment> findApartmentsNearChurch(
+            @RequestParam String churchState,
+            @RequestParam String churchCity
+    ) {
+        return apartmentService.findApartmentsNearChurch(churchState, churchCity);
     }
 
 }

@@ -11,21 +11,32 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "apartment")
-public class Apartment {
+public class Apartment extends BaseEntity{
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer apartmentId;
-    private boolean availability;
-    private float price;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false)
+    private String name;
+
+    @Column(nullable = false)
+    private String description;
+
+    @Column(nullable = false)
+    private double price;
+
+    @Column(nullable = false)
+    private int capacity;
+
+    @ElementCollection
+    private List<String> amenities;
 
     @OneToOne(fetch = FetchType.EAGER,cascade = CascadeType.ALL, targetEntity = Address.class)
     @JoinColumn(name = "address_id", referencedColumnName = "addressId",nullable = true)
     private Address address;
-    // Define the relationship to Church
-    @ManyToMany
-    @JoinTable(name = "apartment_church",
-            joinColumns = @JoinColumn(name = "apartment_id"),
-            inverseJoinColumns = @JoinColumn(name = "church_id"))
-    private List<Church> churches;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "church_id")
+    private Church church;
 
 }

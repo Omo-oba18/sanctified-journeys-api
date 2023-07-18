@@ -6,12 +6,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ApartmentRequest {
-    private boolean availability;
-    private float price;
-    private Address address;
+    private String name;
+    private String description;
+    private double price;
+    private int capacity;
+    private List<String> amenities;
+    private String street;
+    private String city;
+    private String state;
+    private Long churchId;
+
 }
