@@ -13,7 +13,6 @@ import java.util.List;
 @Repository
 public interface ApartmentRepository extends JpaRepository<Apartment, Long> {
 
-
     @Query("SELECT a FROM Apartment a WHERE a.address.state = :state AND a.address.city = :city")
     List<Apartment> findApartmentsByLocation(String state, String city);
 
@@ -26,19 +25,5 @@ public interface ApartmentRepository extends JpaRepository<Apartment, Long> {
     // Custom method for finding apartments near a specific church location
     @Query("SELECT a FROM Apartment a WHERE a.address.state = :churchState AND a.address.city = :churchCity")
     List<Apartment> findApartmentsNearChurch(String churchState, String churchCity);
-
-    @Transactional
-    default Apartment createApartment(String name, String description, double price, int capacity, List<String> amenities, Address address, Church church) {
-        Apartment apartment = new Apartment();
-        apartment.setName(name);
-        apartment.setDescription(description);
-        apartment.setPrice(price);
-        apartment.setCapacity(capacity);
-        apartment.setAmenities(amenities);
-        apartment.setAddress(address);
-        apartment.setChurch(church);
-
-        return save(apartment);
-    }
 
 }

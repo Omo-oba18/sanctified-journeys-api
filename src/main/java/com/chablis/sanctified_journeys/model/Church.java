@@ -1,10 +1,13 @@
 package com.chablis.sanctified_journeys.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.util.List;
+import java.util.Objects;
+
 @Getter
 @Setter
 @Builder
@@ -34,7 +37,20 @@ public class Church extends BaseEntity{
     private Address address;
 
     @OneToMany(mappedBy = "church", cascade = CascadeType.ALL)
+    @JsonIgnore // Add this annotation to break the circular reference
     private List<Apartment> apartments;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Church church)) return false;
+        return Objects.equals(id, church.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 
     public Church(String churchName, Address address) {
         super();

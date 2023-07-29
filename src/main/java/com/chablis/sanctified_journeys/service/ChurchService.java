@@ -11,7 +11,6 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -31,8 +30,12 @@ public class ChurchService {
     }
 
 
-    public Church getChurchById(Long churchId) {
-        Optional<Church> optionalChurch = churchRepository.findById(Math.toIntExact(churchId));
+    public Church getChurchById(Long church_id) {
+        Optional<Church> optionalChurch = churchRepository.findById(church_id);
         return optionalChurch.orElse(null); // Return the church if found, or null if not found
     }
+    public Church getChurchByName(String churchName) {
+        return churchRepository.findByName(churchName);
+    }
+
 }

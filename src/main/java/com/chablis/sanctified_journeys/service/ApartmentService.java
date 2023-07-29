@@ -17,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ApartmentService {
     private final ApartmentRepository apartmentRepository;
+    private final ChurchService churchService;
 
     //    Search apartment service through price, location and church
     public List<Apartment> searchApartmentsByLocation(String state, String city) {
@@ -36,10 +37,10 @@ public class ApartmentService {
     }
 
     //    create apartment service
-    public Apartment createApartment(String name, String description, double price, int capacity, List<String> amenities, Address address, Church church) {
+    public Apartment createApartment(Apartment apartment) {
         try {
-            Validation.buildDefaultValidatorFactory().getValidator().validate(church);
-            return apartmentRepository.createApartment(name, description, price, capacity, amenities, address, church);
+            Validation.buildDefaultValidatorFactory().getValidator().validate(apartment);
+            return apartmentRepository.save(apartment);
         } catch (ConstraintViolationException ex) {
             ErrorUtils.handleConstraintViolationException(ex);
             return null; // We should return something here, even though it won't be reached due to the throw statement above.

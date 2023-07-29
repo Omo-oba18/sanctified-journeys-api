@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ChurchRepository extends JpaRepository<Church, Integer> {
-
+public interface ChurchRepository extends JpaRepository<Church, Long> {
+    Church findByName(String name);
 }

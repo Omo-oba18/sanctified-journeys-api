@@ -1,15 +1,9 @@
 package com.chablis.sanctified_journeys.controller;
 
 import com.chablis.sanctified_journeys.model.Apartment;
-import com.chablis.sanctified_journeys.repository.ApartmentRepository;
-import com.chablis.sanctified_journeys.request.ApartmentRequest;
 import com.chablis.sanctified_journeys.service.ApartmentService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;

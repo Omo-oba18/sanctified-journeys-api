@@ -29,7 +29,9 @@ public class Address extends BaseEntity{
     @NotBlank(message="State must not be blank")
     private String state;
 
-    public Address(String street, String city, String state) {
-        super();
+    public Address(String address1, String city, String state) {
+        this.address1 = address1;
+        this.city = city;
+        this.state = state;
     }
 }

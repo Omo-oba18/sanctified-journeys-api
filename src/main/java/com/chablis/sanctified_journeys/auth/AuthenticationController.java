@@ -35,14 +35,16 @@ public class AuthenticationController {
                     .stream()
                     .map(DefaultMessageSourceResolvable::getDefaultMessage)
                     .collect(Collectors.toList());
-            return ResponseEntity.badRequest().body(new AuthenticationResponse(errors));
+            return ResponseEntity.badRequest().body(new AuthenticationResponse(errors, false));
         }
         try{
-            return ResponseEntity.ok(service.register(request));
+            AuthenticationResponse response = service.register(request);
+            response.setSuccess(true);
+            return ResponseEntity.ok(response);
         }catch(IllegalArgumentException e){
             List<String> errors = new ArrayList<>();
             errors.add(e.getMessage());
-            return ResponseEntity.badRequest().body(new AuthenticationResponse(errors));
+            return ResponseEntity.badRequest().body(new AuthenticationResponse(errors, false));
         }
     }
 
@@ -56,15 +58,17 @@ public ResponseEntity<AuthenticationResponse> login(
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.toList());
-        return ResponseEntity.badRequest().body(new AuthenticationResponse(errors));
+        return ResponseEntity.badRequest().body(new AuthenticationResponse(errors, false));
     }
 
     try {
-        return ResponseEntity.ok(service.authenticate(request));
+        AuthenticationResponse response = service.authenticate(request);
+        response.setSuccess(true);
+        return ResponseEntity.ok(response);
     } catch (IllegalArgumentException e) {
         List<String> errors = new ArrayList<>();
         errors.add(e.getMessage());
-        return ResponseEntity.badRequest().body(new AuthenticationResponse(errors));
+        return ResponseEntity.badRequest().body(new AuthenticationResponse(errors, false));
     }
 }
 }
